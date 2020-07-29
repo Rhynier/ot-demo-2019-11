@@ -24,12 +24,12 @@ namespace BackEndApp.Controllers
         }
 
         private readonly ILogger<WeatherForecastController> _logger;
-        private ITracer _tracer;
+        private Tracer _tracer;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger, TracerFactoryBase tracerFactory)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, TracerProvider tracerProvider)
         {
             _logger = logger;
-            _tracer = tracerFactory.GetTracer("custom");
+            _tracer = tracerProvider.GetTracer("custom");
         }
 
         [HttpGet]

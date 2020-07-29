@@ -4,8 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OpenTelemetry.Resources;
-using OpenTelemetry.Trace.Configuration;
-using OpenTelemetry.Trace.Sampler;
+using OpenTelemetry.Trace;
 using System;
 using System.Collections.Generic;
 
@@ -25,17 +24,13 @@ namespace BackEndApp
         {
             services.AddControllers();
            
-            services.AddOpenTelemetry(b => {
-                b.AddRequestCollector()
-                .UseZipkin(o =>
+            services.AddOpenTelemetry((builder) => {
+                builder.AddAspNetCoreInstrumentation()
+                .UseZipkinExporter(o =>
                 {
                     //o.ServiceName = "BackEndApp";
-                    o.Endpoint = new Uri("http://zipkin.azurewebsites.net/api/v2/spans");
+                    o.Endpoint = new Uri("http://localhost:9411/api/v2/spans");
                 });
-
-
-
-
 
                 // sets sampler
                 //b.SetSampler(new HealthRequestsSampler(Samplers.AlwaysSample));
@@ -46,7 +41,7 @@ namespace BackEndApp
                 //    { "deploymentTenantId", "kubecon-demo-surface" } }));
 
                 // set the FlightID from the distributed context
-                //b.AddProcessorPipeline(pipelineBuilder => pipelineBuilder.AddProcessor(_ => new FlightIDProperties()));
+                //builder.AddProcessorPipeline(pipelineBuilder => pipelineBuilder.AddProcessor(_ => new FlightIDProperties()));
             });
         }
 

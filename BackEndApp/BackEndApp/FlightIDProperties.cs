@@ -1,26 +1,30 @@
 ﻿using OpenTelemetry.Trace;
-using OpenTelemetry.Trace.Export;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace BackEndApp
 {
-    public class FlightIDProperties : SpanProcessor
+    public class FlightIDProperties : ActivityProcessor
     {
-        public override void OnStart(Span span)
+        public override void OnStart(Activity activity)
         {
             foreach (var b in Activity.Current.Baggage)
             {
-                span.SetAttribute(b.Key, b.Value);
+                activity.AddTag(b.Key, b.Value);
             }
         }
 
-        public override void OnEnd(Span span)
+        public override void OnEnd(Activity activity)
         {
         }
 
         public override Task ShutdownAsync(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        public override Task ForceFlushAsync(CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }

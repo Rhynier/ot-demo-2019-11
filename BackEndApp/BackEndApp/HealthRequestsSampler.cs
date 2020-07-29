@@ -7,26 +7,21 @@ using System.Threading.Tasks;
 
 namespace BackEndApp
 {
-    public class HealthRequestsSampler : ISampler
+    public class HealthRequestsSampler : Sampler
     {
-        private ISampler _sampler;
-
-        public HealthRequestsSampler(ISampler chainedSampler)
+        public HealthRequestsSampler()
         {
-            _sampler = chainedSampler;
+            Description = "HealthRequestSampler";
         }
 
-        public string Description { get; } = "HealthRequestSampler";
-
-        public Decision ShouldSample(SpanContext parentContext, ActivityTraceId traceId, ActivitySpanId spanId, string name,
-            IEnumerable<Link> links)
+        public override SamplingResult ShouldSample(in SamplingParameters samplingParameters)
         {
-            if (name == "/health")
+            if (samplingParameters.Name == "/health")
             {
-                return new Decision(false);
+                return new SamplingResult(false);
             }
 
-            return _sampler.ShouldSample(parentContext, traceId, spanId, name, links);
+            return new SamplingResult(true);
         }
     }
 }
